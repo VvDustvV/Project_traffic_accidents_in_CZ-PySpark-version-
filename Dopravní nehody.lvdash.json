@@ -44,11 +44,21 @@
                   "datasetName": "3260ecbf",
                   "fields": [
                     {
+                      "name": "yearly(Datum_nehody)",
+                      "expression": "DATE_TRUNC(\"YEAR\", `Datum_nehody`)"
+                    },
+                    {
                       "name": "count(*)",
                       "expression": "COUNT(`*`)"
                     }
                   ],
-                  "disaggregated": false
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "DATE_TRUNC(\"YEAR\", `Datum_nehody`)"
+                    }
+                  ]
                 }
               }
             ],
@@ -58,24 +68,38 @@
               "encodings": {
                 "value": {
                   "fieldName": "count(*)"
+                },
+                "target": {
+                  "fieldName": "count(*)",
+                  "change": {
+                    "type": "numeric"
+                  },
+                  "period": {
+                    "type": "relative-to-value-period",
+                    "offset": -2
+                  }
+                },
+                "period": {
+                  "fieldName": "yearly(Datum_nehody)"
                 }
               },
               "frame": {
                 "showTitle": true,
-                "title": "Počet nehod"
+                "title": "Celkem počet nehod ",
+                "showDescription": false
               }
             }
           },
           "position": {
             "x": 0,
-            "y": 0,
+            "y": 2,
             "width": 2,
             "height": 3
           }
         },
         {
           "widget": {
-            "name": "1ee9b440",
+            "name": "c1c8d5f7",
             "queries": [
               {
                 "name": "main_query",
@@ -83,12 +107,12 @@
                   "datasetName": "3260ecbf",
                   "fields": [
                     {
-                      "name": "Datum_nehody",
-                      "expression": "`Datum_nehody`"
-                    },
-                    {
                       "name": "count(*)",
                       "expression": "COUNT(`*`)"
+                    },
+                    {
+                      "name": "yearly(Datum_nehody)",
+                      "expression": "DATE_TRUNC(\"YEAR\", `Datum_nehody`)"
                     }
                   ],
                   "disaggregated": false
@@ -100,7 +124,74 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "Datum_nehody",
+                  "fieldName": "yearly(Datum_nehody)",
+                  "displayName": "Nehodovost v posledních 3 letech",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(*)",
+                  "displayName": "Počet nehod",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "count(*)",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "reds"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true,
+                  "text": {
+                    "fieldName": "count(*)",
+                    "displayName": "Počet nehod"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "c5b0846a",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3260ecbf",
+                  "fields": [
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    },
+                    {
+                      "name": "monthly(Datum_nehody)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `Datum_nehody`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(Datum_nehody)",
                   "scale": {
                     "type": "categorical"
                   }
@@ -110,15 +201,41 @@
                   "scale": {
                     "type": "quantitative"
                   }
+                },
+                "color": {
+                  "fieldName": "count(*)",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "reds"
+                    }
+                  }
                 }
               }
             }
           },
           "position": {
-            "x": 2,
+            "x": 0,
+            "y": 5,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "71b81946",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size:36px;line-height:1.5;font-family:Impact;color:#610303\">Obecný přehled dopravních nehod 2025</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
             "y": 0,
-            "width": 3,
-            "height": 6
+            "width": 6,
+            "height": 2
           }
         }
       ],
@@ -130,12 +247,36 @@
       "layout": [
         {
           "widget": {
-            "name": "e1be6f71",
+            "name": "081fbc02",
+            "queries": [
+              {
+                "name": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0f6bbf3e3112694dcec1493cca682_Datum_nehody",
+                "query": {
+                  "datasetName": "3260ecbf",
+                  "fields": [
+                    {
+                      "name": "Datum_nehody",
+                      "expression": "`Datum_nehody`"
+                    },
+                    {
+                      "name": "Datum_nehody_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
             "spec": {
               "version": 2,
               "widgetType": "filter-date-range-picker",
               "encodings": {
-                "fields": []
+                "fields": [
+                  {
+                    "fieldName": "Datum_nehody",
+                    "queryName": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0f6bbf3e3112694dcec1493cca682_Datum_nehody"
+                  }
+                ]
               },
               "frame": {
                 "showTitle": true
