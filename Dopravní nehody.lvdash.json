@@ -1,0 +1,162 @@
+{
+  "datasets": [
+    {
+      "name": "8009169a",
+      "displayName": "gps",
+      "queryLines": [
+        "SELECT * FROM workspace.default.nehody"
+      ]
+    },
+    {
+      "name": "3260ecbf",
+      "displayName": "nehody",
+      "queryLines": [
+        "SELECT * FROM workspace.default.nehody"
+      ]
+    },
+    {
+      "name": "bed473d6",
+      "displayName": "vozidla",
+      "queryLines": [
+        "SELECT * FROM workspace.default.vozidla"
+      ]
+    },
+    {
+      "name": "1c3fe652",
+      "displayName": "nasledky",
+      "queryLines": [
+        "SELECT * FROM workspace.default.nasledky"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "47ae1441",
+      "displayName": "Untitled page",
+      "layout": [
+        {
+          "widget": {
+            "name": "pocet-nehod",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3260ecbf",
+                  "fields": [
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(*)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Počet nehod"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "1ee9b440",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3260ecbf",
+                  "fields": [
+                    {
+                      "name": "Datum_nehody",
+                      "expression": "`Datum_nehody`"
+                    },
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Datum_nehody",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(*)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 0,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "339d7cb6",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "e1be6f71",
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-date-range-picker",
+              "encodings": {
+                "fields": []
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
