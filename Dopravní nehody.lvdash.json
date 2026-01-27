@@ -27,12 +27,71 @@
       "queryLines": [
         "SELECT * FROM workspace.default.nasledky"
       ]
+    },
+    {
+      "name": "4b8aa10c",
+      "displayName": "Poměr zranění a úmrtí",
+      "queryLines": [
+        "SELECT Year(Datum_nehody) as Rok_nehody, \r\n",
+        "       Month(Datum_nehody) as Mesic_nehody,\r\n",
+        "       count(*) as nehody_celkem,\r\n",
+        "       count(*)-count_if(p13a=0) as nehody_s_umrtim,\r\n",
+        "       CAST((((count(*)-count_if(p13a=0))/count(*))*100) as DECIMAL(5,2)) as procento_smrtelnych_nehod,\r\n",
+        "       count_if(p13a=0 and p13b=0 and p13c=0) as nehody_bez_nasledku_na_zdravi,\r\n",
+        "       CAST((count_if(p13a=0 and p13b=0 and p13c=0)/count(*))*100 as DECIMAL(5,2)) as procento_nehod_bez_nasledku_na_zdravi,\r\n",
+        "       count_if(p13a=0 and (p13b>0 or p13c>0)) as nehody_zraneni_bez_umrti,\r\n",
+        "       sum(p13a) as umrti,\r\n",
+        "       sum(p13b) as tezke_zraneni,\r\n",
+        "       sum(p13c) as lehke_zraneni,\r\n",
+        "       sum(p14) as hmotna_skoda \r\n",
+        "FROM workspace.default.nehody\r\n",
+        "GROUP BY Year(Datum_nehody), Month(Datum_nehody)\r\n",
+        "ORDER BY Year(Datum_nehody), Month(Datum_nehody)"
+      ]
+    },
+    {
+      "name": "b52999d3",
+      "displayName": "Dny v týdnu",
+      "queryLines": [
+        "SELECT dayname(Datum_nehody) as Den,\r\n",
+        "       year(Datum_nehody) as Rok_nehody,\r\n",
+        "       month(Datum_nehody) as Mesic_nehody,\r\n",
+        "       count(*) as Pocet_nehod,\r\n",
+        "       (count(*)/SUM(COUNT(*)) OVER()) as Procentualni_zastoupeni\r\n",
+        "FROM nehody\r\n",
+        "GROUP BY Den, Rok_nehody, Mesic_nehody\r\n",
+        "ORDER BY pocet_nehod DESC;"
+      ]
+    },
+    {
+      "name": "4873dcab",
+      "displayName": "Frekvence",
+      "queryLines": [
+        "SELECT p1,\r\n",
+        "       Datum_nehody,\r\n",
+        "       MONTH(Datum_nehody) as Mesic,\r\n",
+        "       year(Datum_nehody) as Rok,\r\n",
+        "       dayname(Datum_nehody) as Den\r\n",
+        "FROM nehody"
+      ]
+    },
+    {
+      "name": "604deb20",
+      "displayName": "Druhy nehody",
+      "queryLines": [
+        "WITH filtered_p6 AS (\r\n",
+        "SELECT * FROM documentace_cz WHERE formular_DN = 'p6'\r\n",
+        ")\r\n",
+        "SELECT YEAR(n.Datum_nehody) as Rok_nehody, MONTH(n.Datum_nehody) as Mesic_nehody, f.popis as Druh_nehody,  COUNT(*) as pocet FROM nehody as n\r\n",
+        "LEFT JOIN filtered_p6 as f ON n.p6 = f.polozka\r\n",
+        "GROUP BY Rok_nehody, Mesic_nehody, Druh_nehody;\r\n"
+      ]
     }
   ],
   "pages": [
     {
       "name": "47ae1441",
-      "displayName": "Untitled page",
+      "displayName": "Obecný přehled",
       "layout": [
         {
           "widget": {
@@ -237,29 +296,130 @@
             "width": 6,
             "height": 2
           }
-        }
-      ],
-      "pageType": "PAGE_TYPE_CANVAS"
-    },
-    {
-      "name": "339d7cb6",
-      "displayName": "Global Filters",
-      "layout": [
+        },
         {
           "widget": {
-            "name": "081fbc02",
+            "name": "e6ec6b08",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-family:Impact;font-size:36px;line-height:1.5;color:#7B000E\">Analýza času dopravních nehod</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "frekvence-nehodovosti-dle-dne-v-tydnu",
             "queries": [
               {
-                "name": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0f6bbf3e3112694dcec1493cca682_Datum_nehody",
+                "name": "main_query",
                 "query": {
-                  "datasetName": "3260ecbf",
+                  "datasetName": "b52999d3",
                   "fields": [
                     {
-                      "name": "Datum_nehody",
-                      "expression": "`Datum_nehody`"
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
                     },
                     {
-                      "name": "Datum_nehody_associativity",
+                      "name": "Den",
+                      "expression": "`Den`"
+                    },
+                    {
+                      "name": "sum(Procentualni_zastoupeni)",
+                      "expression": "SUM(`Procentualni_zastoupeni`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Den",
+                  "displayName": "Den v týdnu",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "Mon",
+                        "Tue",
+                        "Wed",
+                        "Thu",
+                        "Fri",
+                        "Sat",
+                        "Sun"
+                      ]
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Procentualni_zastoupeni)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "count(*)",
+                  "legend": {
+                    "hide": true
+                  },
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "reds"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Frekvence nehodovosti dle dne v týdnu"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "3643dc35",
+            "queries": [
+              {
+                "name": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0f871783c1f1fa61d6fdc1339da7c_Rok_nehody",
+                "query": {
+                  "datasetName": "b52999d3",
+                  "fields": [
+                    {
+                      "name": "Rok_nehody",
+                      "expression": "`Rok_nehody`"
+                    },
+                    {
+                      "name": "Rok_nehody_associativity",
                       "expression": "COUNT_IF(`associative_filter_predicate_group`)"
                     }
                   ],
@@ -269,12 +429,144 @@
             ],
             "spec": {
               "version": 2,
-              "widgetType": "filter-date-range-picker",
+              "widgetType": "filter-multi-select",
               "encodings": {
                 "fields": [
                   {
-                    "fieldName": "Datum_nehody",
-                    "queryName": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0f6bbf3e3112694dcec1493cca682_Datum_nehody"
+                    "fieldName": "Rok_nehody",
+                    "queryName": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0f871783c1f1fa61d6fdc1339da7c_Rok_nehody"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "showDescription": false
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "36bce082",
+            "queries": [
+              {
+                "name": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0f871783c1f1fa61d6fdc1339da7c_Mesic_nehody",
+                "query": {
+                  "datasetName": "b52999d3",
+                  "fields": [
+                    {
+                      "name": "Mesic_nehody",
+                      "expression": "`Mesic_nehody`"
+                    },
+                    {
+                      "name": "Mesic_nehody_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Mesic_nehody",
+                    "queryName": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0f871783c1f1fa61d6fdc1339da7c_Mesic_nehody"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 12,
+            "width": 3,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "339d7cb6",
+      "displayName": "Global Filters",
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+    },
+    {
+      "name": "312bc2f5",
+      "displayName": "Analýza příčin",
+      "layout": [
+        {
+          "widget": {
+            "name": "496e0515",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "604deb20",
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "bf81a69f",
+            "queries": [
+              {
+                "name": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0faf00fd411b7b17dbc69a83e1b04_Rok_nehody",
+                "query": {
+                  "datasetName": "604deb20",
+                  "fields": [
+                    {
+                      "name": "Rok_nehody",
+                      "expression": "`Rok_nehody`"
+                    },
+                    {
+                      "name": "Rok_nehody_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Rok_nehody",
+                    "queryName": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0faf00fd411b7b17dbc69a83e1b04_Rok_nehody"
                   }
                 ]
               },
@@ -286,12 +578,100 @@
           "position": {
             "x": 0,
             "y": 0,
-            "width": 1,
-            "height": 2
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "c7d0766d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "604deb20",
+                  "fields": [
+                    {
+                      "name": "Druh_nehody",
+                      "expression": "`Druh_nehody`"
+                    },
+                    {
+                      "name": "Rok_nehody",
+                      "expression": "`Rok_nehody`"
+                    },
+                    {
+                      "name": "sum(pocet)",
+                      "expression": "SUM(`pocet`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Rok_nehody",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(pocet)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Druh_nehody",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "srážka",
+                        "color": "#7C180E"
+                      },
+                      {
+                        "value": "jiný druh nehody",
+                        "color": "#D75D46"
+                      },
+                      {
+                        "value": "havárie",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 8
+                        }
+                      }
+                    ]
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "Druh_nehody"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 7
           }
         }
       ],
-      "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "c6a5ff1d",
+      "displayName": "Analýza následků",
+      "pageType": "PAGE_TYPE_CANVAS"
     }
   ],
   "uiSettings": {
