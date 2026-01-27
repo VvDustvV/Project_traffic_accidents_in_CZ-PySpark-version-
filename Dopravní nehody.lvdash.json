@@ -76,15 +76,129 @@
       ]
     },
     {
-      "name": "604deb20",
-      "displayName": "Druhy nehody",
+      "name": "3cc37a1f",
+      "displayName": "Druh nehody",
       "queryLines": [
         "WITH filtered_p6 AS (\r\n",
-        "SELECT * FROM documentace_cz WHERE formular_DN = 'p6'\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p6'\r\n",
+        "),\r\n",
+        "filtered_p7 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p7'\r\n",
         ")\r\n",
-        "SELECT YEAR(n.Datum_nehody) as Rok_nehody, MONTH(n.Datum_nehody) as Mesic_nehody, f.popis as Druh_nehody,  COUNT(*) as pocet FROM nehody as n\r\n",
-        "LEFT JOIN filtered_p6 as f ON n.p6 = f.polozka\r\n",
-        "GROUP BY Rok_nehody, Mesic_nehody, Druh_nehody;\r\n"
+        "\r\n",
+        "SELECT YEAR(n.Datum_nehody) as rok_nehody,\r\n",
+        "       MONTH(n.Datum_nehody) as mesic_nehody,\r\n",
+        "       fp6.popis as druh_nehody,\r\n",
+        "       CONCAT(fp6.popis, ' ', fp6.blizsi_definice) as detail_druhu,      \r\n",
+        "       fp7.popis as druh_srazky_vozidel,\r\n",
+        "       COUNT(*) as pocet \r\n",
+        "FROM nehody as n\r\n",
+        "LEFT JOIN filtered_p6 as fp6 ON n.p6 = fp6.polozka\r\n",
+        "LEFT JOIN filtered_p7 as fp7 ON n.p7 = fp7.polozka\r\n",
+        "GROUP BY rok_nehody, \r\n",
+        "         mesic_nehody, \r\n",
+        "         druh_nehody, \r\n",
+        "         detail_druhu, \r\n",
+        "         druh_srazky_vozidel;"
+      ]
+    },
+    {
+      "name": "c513850b",
+      "displayName": "Příčiny nehody",
+      "queryLines": [
+        "WITH filtered_p6 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p6'\r\n",
+        "),\r\n",
+        "filtered_p8 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p8'\r\n",
+        "),\r\n",
+        "filtered_p8a AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p8a'\r\n",
+        "),\r\n",
+        "filtered_p10 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p10'\r\n",
+        "),\r\n",
+        "filtered_p11 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p11'\r\n",
+        "),\r\n",
+        "filtered_p11a AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p11a'\r\n",
+        "),\r\n",
+        "filtered_p12 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p12'\r\n",
+        "),\r\n",
+        "filtered_p15 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p15'\r\n",
+        "),\r\n",
+        "filtered_p16 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p16'\r\n",
+        "),\r\n",
+        "filtered_p18 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p18'\r\n",
+        "),\r\n",
+        "filtered_p19 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p19'\r\n",
+        "),\r\n",
+        "filtered_p29 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p29'\r\n",
+        "),\r\n",
+        "filtered_p29a AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p29a'\r\n",
+        "),\r\n",
+        "filtered_p30 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p30'\r\n",
+        "),\r\n",
+        "filtered_p30a AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p30a'\r\n",
+        "),\r\n",
+        "filtered_p30b AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p30b'\r\n",
+        "),\r\n",
+        "filtered_p31 AS (\r\n",
+        "  SELECT * FROM dokumentace_cz WHERE formular_DN = 'p31' \r\n",
+        ")\r\n",
+        "\r\n",
+        "\r\n",
+        "SELECT fp6.popis as druh_nehody,\r\n",
+        "       fp8.popis as druh_pevne_prekazky,\r\n",
+        "       fp8a.popis as druh_zvirete,\r\n",
+        "       fp10.popis as zavineni_nehody,\r\n",
+        "       fp11.popis as alkohol_u_vinika,\r\n",
+        "       fp11a.popis as drogy_u_vinika,\r\n",
+        "       fp12.popis as hlavni_pricina,\r\n",
+        "       fp15.popis as druh_vozovky,\r\n",
+        "       fp16.popis as stav_povrchu_vozovky,\r\n",
+        "       fp18.popis as stav_vozovky,\r\n",
+        "       fp19.popis as viditelnost,\r\n",
+        "       fp29.popis as kategorie_chodce,\r\n",
+        "       fp29a.popis as reflexni_prvky,\r\n",
+        "       fp30.popis as stav_chodce,\r\n",
+        "       fp30a.popis as alkohol_u_chodce,\r\n",
+        "       fp30b.popis as drogy_u_chodce,\r\n",
+        "       fp31.popis as chovani_chodce,\r\n",
+        "       count(*) as pocet,\r\n",
+        "       (count(*)/SUM(COUNT(*)) OVER()) as procento\r\n",
+        "FROM nehody as n\r\n",
+        "LEFT JOIN chodci as ch ON n.p1 = ch.p1\r\n",
+        "LEFT JOIN filtered_p6 as fp6 ON n.p6 = fp6.polozka\r\n",
+        "LEFT JOIN filtered_p8 as fp8 ON n.p8 = fp8.polozka\r\n",
+        "LEFT JOIN filtered_p8a as fp8a ON n.p8a = fp8a.polozka\r\n",
+        "LEFT JOIN filtered_p10 as fp10 ON n.p10 = fp10.polozka\r\n",
+        "LEFT JOIN filtered_p11 as fp11 ON n.p11 = fp11.polozka\r\n",
+        "LEFT JOIN filtered_p11a as fp11a ON n.p11a = fp11a.polozka\r\n",
+        "LEFT JOIN filtered_p12 as fp12 ON n.p12 = fp12.polozka\r\n",
+        "LEFT JOIN filtered_p15 as fp15 ON n.p15 = fp15.polozka\r\n",
+        "LEFT JOIN filtered_p16 as fp16 ON n.p16 = fp16.polozka\r\n",
+        "LEFT JOIN filtered_p18 as fp18 ON n.p18 = fp18.polozka\r\n",
+        "LEFT JOIN filtered_p19 as fp19 ON n.p19 = fp19.polozka\r\n",
+        "LEFT JOIN filtered_p29 as fp29 ON ch.p29 = fp29.polozka\r\n",
+        "LEFT JOIN filtered_p29a as fp29a ON ch.p29a = fp29a.polozka\r\n",
+        "LEFT JOIN filtered_p30 as fp30 ON ch.p30 = fp30.polozka\r\n",
+        "LEFT JOIN filtered_p30a as fp30a ON ch.p30a = fp30a.polozka\r\n",
+        "LEFT JOIN filtered_p30b as fp30b ON ch.p30b = fp30b.polozka\r\n",
+        "LEFT JOIN filtered_p31 as fp31 ON ch.p31 = fp31.polozka\r\n",
+        "GROUP BY druh_nehody, druh_pevne_prekazky, druh_zvirete, zavineni_nehody, alkohol_u_vinika, drogy_u_vinika, hlavni_pricina, druh_vozovky, stav_povrchu_vozovky, \r\n",
+        "         stav_vozovky, viditelnost, kategorie_chodce, reflexni_prvky, stav_chodce, alkohol_u_chodce, drogy_u_chodce, chovani_chodce"
       ]
     }
   ],
@@ -191,13 +305,17 @@
                 },
                 "y": {
                   "fieldName": "count(*)",
-                  "displayName": "Počet nehod",
+                  "axis": {
+                    "hideTitle": true
+                  },
+                  "displayName": "Pocet nehod",
                   "scale": {
                     "type": "quantitative"
                   }
                 },
                 "color": {
                   "fieldName": "count(*)",
+                  "displayName": "Počet nehod",
                   "scale": {
                     "type": "quantitative",
                     "colorRamp": {
@@ -257,12 +375,16 @@
                 },
                 "y": {
                   "fieldName": "count(*)",
+                  "axis": {
+                    "hideTitle": true
+                  },
                   "scale": {
                     "type": "quantitative"
                   }
                 },
                 "color": {
                   "fieldName": "count(*)",
+                  "displayName": "Počet nehod",
                   "scale": {
                     "type": "quantitative",
                     "colorRamp": {
@@ -510,94 +632,20 @@
       "layout": [
         {
           "widget": {
-            "name": "496e0515",
+            "name": "94c843da",
             "queries": [
               {
                 "name": "main_query",
                 "query": {
-                  "datasetName": "604deb20",
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 3,
-              "widgetType": "pie",
-              "encodings": {
-                "label": {
-                  "show": true
-                }
-              }
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 1,
-            "width": 3,
-            "height": 6
-          }
-        },
-        {
-          "widget": {
-            "name": "bf81a69f",
-            "queries": [
-              {
-                "name": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0faf00fd411b7b17dbc69a83e1b04_Rok_nehody",
-                "query": {
-                  "datasetName": "604deb20",
+                  "datasetName": "3cc37a1f",
                   "fields": [
                     {
-                      "name": "Rok_nehody",
-                      "expression": "`Rok_nehody`"
+                      "name": "druh_nehody",
+                      "expression": "`druh_nehody`"
                     },
                     {
-                      "name": "Rok_nehody_associativity",
-                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "widgetType": "filter-single-select",
-              "encodings": {
-                "fields": [
-                  {
-                    "fieldName": "Rok_nehody",
-                    "queryName": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0faf00fd411b7b17dbc69a83e1b04_Rok_nehody"
-                  }
-                ]
-              },
-              "frame": {
-                "showTitle": true
-              }
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 0,
-            "width": 3,
-            "height": 1
-          }
-        },
-        {
-          "widget": {
-            "name": "c7d0766d",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "604deb20",
-                  "fields": [
-                    {
-                      "name": "Druh_nehody",
-                      "expression": "`Druh_nehody`"
-                    },
-                    {
-                      "name": "Rok_nehody",
-                      "expression": "`Rok_nehody`"
+                      "name": "rok_nehody",
+                      "expression": "`rok_nehody`"
                     },
                     {
                       "name": "sum(pocet)",
@@ -613,35 +661,233 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "Rok_nehody",
+                  "fieldName": "rok_nehody",
                   "scale": {
                     "type": "categorical"
                   }
                 },
                 "y": {
                   "fieldName": "sum(pocet)",
+                  "displayName": " ",
                   "scale": {
                     "type": "quantitative"
                   }
                 },
                 "color": {
-                  "fieldName": "Druh_nehody",
+                  "fieldName": "druh_nehody",
+                  "legend": {
+                    "position": "left"
+                  },
+                  "displayName": "Nehodové situace",
                   "scale": {
                     "type": "categorical",
                     "mappings": [
                       {
                         "value": "srážka",
-                        "color": "#7C180E"
+                        "color": "#6B1208"
                       },
                       {
                         "value": "jiný druh nehody",
-                        "color": "#D75D46"
-                      },
-                      {
-                        "value": "havárie",
                         "color": {
                           "themeColorType": "visualizationColors",
                           "position": 8
+                        }
+                      },
+                      {
+                        "value": "havárie",
+                        "color": "#FA4432"
+                      }
+                    ],
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "jiný druh nehody",
+                        "havárie",
+                        "srážka"
+                      ]
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 3,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "2b1b4744",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block;\"><span style=\"font-size:36px;line-height:1.5;font-family:Impact;color:#6B1208\">Analýza příčin dopravních nehod</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "5b4c0fc2",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size:18px\">Havárie - nehody pouze jednoho dopravního prostředku během provozu na pozemní komunikaci</span>\n",
+                "\n",
+                "<span style=\"font-size:18px\">Srážky - střetu dvou nebo více dopravních prostředků během provozu na pozemní komunikaci</span>\n",
+                "\n",
+                "<span style=\"font-size: 18px;\">Jiný druh nehody - situace, které nelze klasifikovat jako srážku nebo havárii. (př.: uvolní a spadne přepravovaný náklad z nákladové plochy dopravního prostředku během jízdy na pozemní komunikaci)</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "ed5320e6",
+            "queries": [
+              {
+                "name": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0fb59f1691ccd807e871c41c87cf8_rok_nehody",
+                "query": {
+                  "datasetName": "3cc37a1f",
+                  "fields": [
+                    {
+                      "name": "rok_nehody",
+                      "expression": "`rok_nehody`"
+                    },
+                    {
+                      "name": "rok_nehody_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "rok_nehody",
+                    "queryName": "dashboards/01f0f6bbacbb16b1aa64e42aa329ae99/datasets/01f0fb59f1691ccd807e871c41c87cf8_rok_nehody"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "c6e73555",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3cc37a1f",
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {}
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 3,
+            "width": 3,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "accidents-by-type",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "c513850b",
+                  "fields": [
+                    {
+                      "name": "sum(procento)",
+                      "expression": "SUM(`procento`)"
+                    },
+                    {
+                      "name": "zavineni_nehody",
+                      "expression": "`zavineni_nehody`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(procento)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Poměr viníků nehod"
+                },
+                "color": {
+                  "fieldName": "zavineni_nehody",
+                  "displayName": "Viník nehody",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "řidičem",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 4
+                        }
+                      },
+                      {
+                        "value": "lesní zvěří, domácím zvířectvem",
+                        "color": "#5A0000"
+                      },
+                      {
+                        "value": "jiné zavinění",
+                        "color": {
+                          "themeColorType": "fontColor"
+                        }
+                      },
+                      {
+                        "value": "jiným účastníkem silničního provozu",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 2
                         }
                       }
                     ]
@@ -649,20 +895,145 @@
                 },
                 "label": {
                   "show": true
-                },
-                "extra": [
-                  {
-                    "fieldName": "Druh_nehody"
-                  }
-                ]
+                }
               }
             }
           },
           "position": {
-            "x": 3,
-            "y": 0,
+            "x": 0,
+            "y": 15,
             "width": 3,
-            "height": 7
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c49a8620",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "c513850b",
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {}
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 23,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "bb0bd677",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size:36px;line-height:1.5;font-family:Impact;color:#6B1208\">Zaviněno </span><span style=\"font-size: 36px;line-height: 1.5;font-family: Impact;\">řidičem</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 21,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "5b55e405",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size:36px;line-height:1.5;font-family:Impact;color:#6B1208\">Zaviněn</span><span style=\"font-family:Impact;font-size:36px;line-height:1.5;color:#6B1208\">o </span><span style=\"font-family: Impact;font-size: 36px;line-height: 1.5;\">lesní zvěří</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 29,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "5d6bf05b",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size: 36px;line-height: 1.5;font-family: Impact;color: #6B1208;\">Zaviněn</span><span style=\"font-family: Impact;font-size: 36px;line-height: 1.5;color: #6B1208;\">o</span><span style=\"font-size: 36px;line-height: 1.5;font-family: Impact;\"> chodcem</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 37,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "7989a300",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size:36px;line-height:1.5;font-family:Impact;color:#6B1208\">Zaviněn</span><span style=\"font-family:Impact;font-size:36px;line-height:1.5;color:#6B1208\">o</span><span style=\"font-size:36px;line-height:1.5;font-family:Impact\"> závadou kommunikace</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 39,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "d43e1ca0",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size: 36px;line-height: 1.5;font-family: Impact;color: #6B1208;\">Zaviněn</span><span style=\"font-family: Impact;font-size: 36px;line-height: 1.5;color: #6B1208;\">o</span><span style=\"font-size: 36px;line-height: 1.5;font-family: Impact;\"> </span><span style=\"font-family: Impact;font-size: 36px;line-height: 1.5;\">jiným účastníkem provozu</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 41,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "979aa10c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "c513850b",
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {}
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 31,
+            "width": 3,
+            "height": 6
           }
         }
       ],
@@ -671,6 +1042,33 @@
     {
       "name": "c6a5ff1d",
       "displayName": "Analýza následků",
+      "layout": [
+        {
+          "widget": {
+            "name": "4814a497",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b8aa10c",
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {}
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
       "pageType": "PAGE_TYPE_CANVAS"
     }
   ],
