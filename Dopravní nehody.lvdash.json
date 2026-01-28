@@ -424,7 +424,7 @@
             "name": "e6ec6b08",
             "multilineTextboxSpec": {
               "lines": [
-                "<span style=\"text-align:center;display:block\"><span style=\"font-family:Impact;font-size:36px;line-height:1.5;color:#7B000E\">Analýza času dopravních nehod</span></span>"
+                "<span style=\"text-align:center;display:block\"><span style=\"font-family:Impact;font-size:36px;line-height:1.5;color:#7B000E\">Analýza dopravních nehod dle dne</span></span>"
               ]
             }
           },
@@ -463,10 +463,13 @@
             ],
             "spec": {
               "version": 3,
-              "widgetType": "bar",
+              "widgetType": "line",
               "encodings": {
                 "x": {
                   "fieldName": "Den",
+                  "axis": {
+                    "labelAngle": 45
+                  },
                   "displayName": "Den v týdnu",
                   "scale": {
                     "type": "categorical",
@@ -517,6 +520,9 @@
               "frame": {
                 "showTitle": true,
                 "title": "Frekvence nehodovosti dle dne v týdnu"
+              },
+              "mark": {
+                "size": 0.7
               }
             }
           },
@@ -524,7 +530,7 @@
             "x": 0,
             "y": 13,
             "width": 6,
-            "height": 6
+            "height": 8
           }
         },
         {
@@ -1019,14 +1025,32 @@
                 "name": "main_query",
                 "query": {
                   "datasetName": "c513850b",
-                  "disaggregated": true
+                  "fields": [
+                    {
+                      "name": "druh_zvirete",
+                      "expression": "`druh_zvirete`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`druh_zvirete` IN (`druh_zvirete`) OR TRUE"
+                    }
+                  ],
+                  "disaggregated": false
                 }
               }
             ],
             "spec": {
               "version": 3,
               "widgetType": "bar",
-              "encodings": {}
+              "encodings": {
+                "x": {
+                  "fieldName": "druh_zvirete",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
             }
           },
           "position": {
