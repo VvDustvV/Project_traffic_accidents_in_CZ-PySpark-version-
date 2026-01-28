@@ -53,13 +53,14 @@
       "name": "b52999d3",
       "displayName": "Dny v týdnu",
       "queryLines": [
-        "SELECT dayname(Datum_nehody) as Den,\r\n",
+        "SELECT Datum_nehody,\r\n",
+        "       dayname(Datum_nehody) as Den,\r\n",
         "       year(Datum_nehody) as Rok_nehody,\r\n",
         "       month(Datum_nehody) as Mesic_nehody,\r\n",
         "       count(*) as Pocet_nehod,\r\n",
         "       (count(*)/SUM(COUNT(*)) OVER()) as Procentualni_zastoupeni\r\n",
         "FROM nehody\r\n",
-        "GROUP BY Den, Rok_nehody, Mesic_nehody\r\n",
+        "GROUP BY Datum_nehody, Den, Rok_nehody, Mesic_nehody\r\n",
         "ORDER BY pocet_nehod DESC;"
       ]
     },
@@ -277,15 +278,15 @@
               {
                 "name": "main_query",
                 "query": {
-                  "datasetName": "3260ecbf",
+                  "datasetName": "b52999d3",
                   "fields": [
                     {
-                      "name": "count(*)",
-                      "expression": "COUNT(`*`)"
+                      "name": "sum(Pocet_nehod)",
+                      "expression": "SUM(`Pocet_nehod`)"
                     },
                     {
-                      "name": "yearly(Datum_nehody)",
-                      "expression": "DATE_TRUNC(\"YEAR\", `Datum_nehody`)"
+                      "name": "Rok_nehody",
+                      "expression": "`Rok_nehody`"
                     }
                   ],
                   "disaggregated": false
@@ -297,14 +298,14 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "yearly(Datum_nehody)",
+                  "fieldName": "Rok_nehody",
                   "displayName": "Nehodovost v posledních 3 letech",
                   "scale": {
-                    "type": "temporal"
+                    "type": "categorical"
                   }
                 },
                 "y": {
-                  "fieldName": "count(*)",
+                  "fieldName": "sum(Pocet_nehod)",
                   "axis": {
                     "hideTitle": true
                   },
@@ -314,7 +315,7 @@
                   }
                 },
                 "color": {
-                  "fieldName": "count(*)",
+                  "fieldName": "sum(Pocet_nehod)",
                   "displayName": "Počet nehod",
                   "scale": {
                     "type": "quantitative",
@@ -325,11 +326,7 @@
                   }
                 },
                 "label": {
-                  "show": true,
-                  "text": {
-                    "fieldName": "count(*)",
-                    "displayName": "Počet nehod"
-                  }
+                  "show": true
                 }
               }
             }
@@ -348,15 +345,15 @@
               {
                 "name": "main_query",
                 "query": {
-                  "datasetName": "3260ecbf",
+                  "datasetName": "b52999d3",
                   "fields": [
                     {
-                      "name": "count(*)",
-                      "expression": "COUNT(`*`)"
+                      "name": "Mesic_nehody",
+                      "expression": "`Mesic_nehody`"
                     },
                     {
-                      "name": "monthly(Datum_nehody)",
-                      "expression": "DATE_TRUNC(\"MONTH\", `Datum_nehody`)"
+                      "name": "sum(Pocet_nehod)",
+                      "expression": "SUM(`Pocet_nehod`)"
                     }
                   ],
                   "disaggregated": false
@@ -365,40 +362,70 @@
             ],
             "spec": {
               "version": 3,
-              "widgetType": "bar",
+              "widgetType": "line",
               "encodings": {
                 "x": {
-                  "fieldName": "monthly(Datum_nehody)",
-                  "scale": {
-                    "type": "categorical"
-                  }
-                },
-                "y": {
-                  "fieldName": "count(*)",
-                  "axis": {
-                    "hideTitle": true
-                  },
+                  "fieldName": "Mesic_nehody",
                   "scale": {
                     "type": "quantitative"
                   }
                 },
-                "color": {
-                  "fieldName": "count(*)",
-                  "displayName": "Počet nehod",
+                "y": {
+                  "fieldName": "sum(Pocet_nehod)",
                   "scale": {
-                    "type": "quantitative",
-                    "colorRamp": {
-                      "mode": "scheme",
-                      "scheme": "reds"
-                    }
+                    "type": "quantitative"
                   }
                 }
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
               }
             }
           },
           "position": {
             "x": 0,
-            "y": 5,
+            "y": 10,
             "width": 6,
             "height": 5
           }
@@ -424,13 +451,13 @@
             "name": "e6ec6b08",
             "multilineTextboxSpec": {
               "lines": [
-                "<span style=\"text-align:center;display:block\"><span style=\"font-family:Impact;font-size:36px;line-height:1.5;color:#7B000E\">Analýza dopravních nehod dle dne</span></span>"
+                "<span style=\"text-align:center;display:block\"><span style=\"font-family:Impact;font-size:36px;line-height:1.5;color:#7B000E\">Analýza dopravních ne</span><span style=\"font-family: Impact;font-size: 36px;line-height: 1.5;color: #7B000E;\">hod dle </span><span style=\"font-family: Impact;color: #7B000E;font-size: 36px;line-height: 1.5;\">měsíce</span></span>"
               ]
             }
           },
           "position": {
             "x": 0,
-            "y": 10,
+            "y": 8,
             "width": 6,
             "height": 2
           }
@@ -463,7 +490,7 @@
             ],
             "spec": {
               "version": 3,
-              "widgetType": "line",
+              "widgetType": "bar",
               "encodings": {
                 "x": {
                   "fieldName": "Den",
@@ -520,15 +547,12 @@
               "frame": {
                 "showTitle": true,
                 "title": "Frekvence nehodovosti dle dne v týdnu"
-              },
-              "mark": {
-                "size": 0.7
               }
             }
           },
           "position": {
             "x": 0,
-            "y": 13,
+            "y": 18,
             "width": 6,
             "height": 8
           }
@@ -574,7 +598,7 @@
           },
           "position": {
             "x": 0,
-            "y": 12,
+            "y": 17,
             "width": 3,
             "height": 1
           }
@@ -619,9 +643,145 @@
           },
           "position": {
             "x": 3,
-            "y": 12,
+            "y": 17,
             "width": 3,
             "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "773e2e1c",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-family:Impact;font-size:36px;line-height:1.5;color:#7B000E\">Analýza dopravních nehod dle dne</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "933f44d0",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b52999d3",
+                  "fields": [
+                    {
+                      "name": "max(Pocet_nehod)",
+                      "expression": "MAX(`Pocet_nehod`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "max(Pocet_nehod)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Největší počet nehod v jednom dni",
+                "showDescription": false
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "10066f97",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b52999d3",
+                  "fields": [
+                    {
+                      "name": "max(Pocet_nehod)",
+                      "expression": "MAX(`Pocet_nehod`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "max(Pocet_nehod)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Největší počet nehod v jednom dni",
+                "showDescription": false
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "acdbea62",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b52999d3",
+                  "fields": [
+                    {
+                      "name": "max(Pocet_nehod)",
+                      "expression": "MAX(`Pocet_nehod`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "max(Pocet_nehod)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Největší počet nehod v jednom dni",
+                "showDescription": false
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 2,
+            "height": 3
           }
         }
       ],
